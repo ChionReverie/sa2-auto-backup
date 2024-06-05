@@ -2,52 +2,52 @@
 #include <algorithm>
 #include "PAKFile.h"
 
-PAKFile::PAKFile(const char* filename)
+PAKFile::PAKFile(const char *filename)
 {
 	std::ifstream str(filename, std::ios::binary);
 	init(str);
 	str.close();
 }
 
-PAKFile::PAKFile(const wchar_t* filename)
+PAKFile::PAKFile(const wchar_t *filename)
 {
 	std::ifstream str(filename, std::ios::binary);
 	init(str);
 	str.close();
 }
 
-PAKFile::PAKFile(const std::string& filename)
+PAKFile::PAKFile(const std::string &filename)
 {
 	std::ifstream str(filename, std::ios::binary);
 	init(str);
 	str.close();
 }
 
-PAKFile::PAKFile(const std::wstring& filename)
+PAKFile::PAKFile(const std::wstring &filename)
 {
 	std::ifstream str(filename, std::ios::binary);
 	init(str);
 	str.close();
 }
 
-PAKFile::PAKFile(std::istream& stream)
+PAKFile::PAKFile(std::istream &stream)
 {
 	init(stream);
 }
 
 PAKFile::~PAKFile()
 {
-	for (auto& entry : entries)
+	for (auto &entry : entries)
 		delete[] entry.second.data;
 }
 
-template<typename T>
-static inline void readdata(std::istream& stream, T& data)
+template <typename T>
+static inline void readdata(std::istream &stream, T &data)
 {
-	stream.read(reinterpret_cast<char*>(&data), sizeof(T));
+	stream.read(reinterpret_cast<char *>(&data), sizeof(T));
 }
 
-bool PAKFile::is_pak(std::istream& file)
+bool PAKFile::is_pak(std::istream &file)
 {
 	const auto pos = file.tellg();
 	const auto result = check_header(file);
@@ -56,31 +56,31 @@ bool PAKFile::is_pak(std::istream& file)
 	return result;
 }
 
-bool PAKFile::is_pak(const char* filename)
+bool PAKFile::is_pak(const char *filename)
 {
 	std::ifstream file(filename, std::ios::binary);
 	return check_header(file);
 }
 
-bool PAKFile::is_pak(const wchar_t* filename)
+bool PAKFile::is_pak(const wchar_t *filename)
 {
 	std::ifstream file(filename, std::ios::binary);
 	return check_header(file);
 }
 
-bool PAKFile::is_pak(const std::string& filename)
+bool PAKFile::is_pak(const std::string &filename)
 {
 	std::ifstream file(filename, std::ios::binary);
 	return check_header(file);
 }
 
-bool PAKFile::is_pak(const std::wstring& filename)
+bool PAKFile::is_pak(const std::wstring &filename)
 {
 	std::ifstream file(filename, std::ios::binary);
 	return check_header(file);
 }
 
-const PAKFile::datatype* PAKFile::data() const
+const PAKFile::datatype *PAKFile::data() const
 {
 	return &entries;
 }
@@ -95,15 +95,15 @@ PAKFile::iterator PAKFile::end() const
 	return entries.end();
 }
 
-const PAKFile::Entry* PAKFile::find(std::string& name) const
+const PAKFile::Entry *PAKFile::find(std::string &name) const
 {
-	auto& entry = entries.find(name);
+	auto entry = entries.find(name); // TODO: Refresh this line from libmodutils
 	if (entry == end())
 		return nullptr;
 	return &entry->second;
 }
 
-bool PAKFile::check_header(std::istream& stream)
+bool PAKFile::check_header(std::istream &stream)
 {
 	uint32_t magic;
 	readdata(stream, magic);
@@ -111,7 +111,7 @@ bool PAKFile::check_header(std::istream& stream)
 	return magic == PAKFile::magic;
 }
 
-void PAKFile::init(std::istream& stream)
+void PAKFile::init(std::istream &stream)
 {
 	if (!check_header(stream))
 		return;
@@ -143,8 +143,8 @@ void PAKFile::init(std::istream& stream)
 	}
 	for (int i = 0; i < numfiles; ++i)
 	{
-		char* data = new char[lens[i]];
+		char *data = new char[lens[i]];
 		stream.read(data, lens[i]);
-		entries.insert({ names[i], { paths[i], data, lens[i] } });
+		entries.insert({names[i], {paths[i], data, lens[i]}});
 	}
 }

@@ -15,5 +15,6 @@
 #include "Trampoline.h"
 #include "ModelInfo.h"
 #include "FunctionHook.h"
+#include "debug.h"
 
-#endif //PCH_H
+#endif // PCH_H

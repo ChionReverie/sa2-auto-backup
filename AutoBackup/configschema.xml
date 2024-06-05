@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ConfigSchema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonicretro.org">
+	<Groups>
+		<Group name="General">
+			<Property name="BackupDirectory" type="string" display="Backups Location" defaultvalue="">
+				<HelpText>Backed-up saves will be stored relative to this directory. This path should be outside your Sonic Adventure 2 install, that way it will be preserved if you ever uninstall the game.
+
+Note: Linux / Proton users may want to store backups relative to Z:/ (such as Z:/home/deck/Backups/ on steamdeck.)	
+				</HelpText>
+			</Property>
+			<Property name="MainCopyInterval" type="Interval" display="Main Copy Interval" defaultvalue="Latest">
+				<HelpText>How often should a duplicate of backups be made?</HelpText>
+			</Property>
+			<Property name="ChaoCopyInterval" type="Interval" display="Chao Copy Interval" defaultvalue="Latest">
+				<HelpText>How often should a duplicate of backups be made?</HelpText>
+			</Property>
+		</Group>
+	</Groups>
+	
+	
+	<Enums>
+		<Enum name="Interval">
+			<EnumMember name="Latest" display="Latest Only" />
+			<EnumMember name="Weekly" display="Weekly and Latest" />
+			<EnumMember name="Daily" display="Daily and Latest" />
+		</Enum>
+	</Enums>
+</ConfigSchema>

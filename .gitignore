@@ -1,9 +1,9 @@
 build/
 bin/
-build.sh
-build.bat
 .vscode/
-main.dll
+AutoBackup/config.ini
+AutoBackup/AutoBackup.dll
+AutoBackup.zip
 
 .vs/
 *.suo

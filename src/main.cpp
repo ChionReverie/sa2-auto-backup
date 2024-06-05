@@ -1,35 +1,74 @@
 #include "pch.h"
+#include "config.h"
+#include <filesystem>
+#include <UsercallFunctionHandler.h>
+
+Configuration *config;
+
+void BackupSaves()
+{
+  // Check lastplayed.ini for if a new cycle has begun
+  // Create new folder for the current cycle
+  // Copy latest saves to the new folder
+}
+
+void AfterSave()
+{
+  // 1. Wait for the game to save the game
+  // 2. Move the latest backups to `SONIC2B__%ID%.old`
+  // 3. Copy the newest saves to `SONIC2B__%ID%`
+}
+
+int On_WriteSaveFile(char *path, void *a2, size_t count);
+UsercallFunc(
+    int,
+    WriteSaveFile_t,
+    (char *mypath, void *a2, size_t count),
+    (mypath, a2, count),
+    0x426760,
+    rEAX,
+    rECX, rEDX, stack4);
+int On_WriteSaveFile(char *path, void *a2, size_t count)
+{
+  auto result = WriteSaveFile_t.Original(path, a2, count);
+  AfterSave(); // My function
+  return result;
+}
+
+void MakeExperimentalHooks()
+{
+  WriteSaveFile_t.Hook(On_WriteSaveFile);
+}
 
 extern "C"
 {
-	// Optional.
-	// This function runs code one time when the game starts up. Great for loading assets and setting things up.
-	__declspec(dllexport) void __cdecl Init(const char* path, const HelperFunctions& helperFunctions)
-	{
-	}
+  // Optional.
+  // This function runs code one time when the game starts up. Great for loading assets and setting things up.
+  __declspec(dllexport) void __cdecl Init(const char *mod_dir, const HelperFunctions &helperFunctions)
+  {
 
-	// Optional.
-	// This function runs code on every frame of the game, INCLUDING being in menus, cutscenes, etc.
-	// It is recommended to test for game state so that you only run code at a specific time.
-	__declspec(dllexport) void __cdecl OnFrame()
-	{
-		// For every frame that you're in a level, add 100 points.
-		if (GameState == GameStates_Ingame) {
-			ScoreP1 += 100;
-		}
-	}
+    MakeExperimentalHooks();
 
-	// Optional.
-	// This function runs code every time the player inputs. Good for adding custom inputs / overriding events.
-	__declspec(dllexport) void __cdecl OnInput()
-	{
-	}
+    auto result = configure(mod_dir, helperFunctions);
+    if (!result.has_value())
+    {
+      std::stringstream message;
+      message << "Errors were found in your Automatic Backups configuration file.\n\n";
+      for (auto err : result.error())
+      {
+        message << err << "\n";
+      }
+      message << "\n"
+              << "Please reconfigure your Automatic Backups mod. See README.md for further detail.";
+      Debug::DisplayMessage(message.str().c_str());
+    }
 
-	// Optional.
-	// This function runs while the game processes input.
-	__declspec(dllexport) void __cdecl OnControl()
-	{
-	}
+    BackupSaves();
+  }
 
-	__declspec(dllexport) ModInfo SA2ModInfo = { ModLoaderVer }; // This is needed for the Mod Loader to recognize the DLL.
+  __declspec(dllexport) void __cdecl OnExit()
+  {
+    delete config;
+  }
+  __declspec(dllexport) ModInfo SA2ModInfo = {ModLoaderVer}; // This is needed for the Mod Loader to recognize the DLL.
 }

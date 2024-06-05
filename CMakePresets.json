@@ -3,7 +3,7 @@
   "cmakeMinimumRequired": {"major": 3,"minor": 12,"patch": 0},
   "configurePresets": [
     {
-      "name": "clang.make.msvc",
+      "name": "default",
       "binaryDir": "${sourceDir}/build",
       "generator": "Unix Makefiles",
       "cacheVariables": {
@@ -12,6 +12,24 @@
         "CMAKE_C_COMPILER": "cl",
         "CMAKE_CXX_COMPILER": "cl"
       }
+    },
+    {
+      "name": "wine",
+      "inherits": "default",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_CROSSCOMPILING_EMULATOR": "wine"
+      }
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    },
+    {
+      "name": "wine",
+      "configurePreset": "wine"
     }
   ]
 }
