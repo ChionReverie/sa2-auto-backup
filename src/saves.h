@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "config.h"
 
-void BackupSaves();
+void BackupIncrementally(Configuration *config);
 
 void PushSave(Configuration *config, char *filepath);
 

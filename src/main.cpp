@@ -51,7 +51,7 @@ extern "C"
     }
     config = result.value();
 
-    BackupSaves();
+    BackupIncrementally(config);
   }
 
   __declspec(dllexport) void __cdecl OnExit()
