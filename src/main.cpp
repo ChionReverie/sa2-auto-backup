@@ -1,23 +1,10 @@
 #include "pch.h"
 #include "config.h"
+#include "saves.h"
 #include <filesystem>
 #include <UsercallFunctionHandler.h>
 
 Configuration *config;
-
-void BackupSaves()
-{
-  // Check lastplayed.ini for if a new cycle has begun
-  // Create new folder for the current cycle
-  // Copy latest saves to the new folder
-}
-
-void AfterSave()
-{
-  // 1. Wait for the game to save the game
-  // 2. Move the latest backups to `SONIC2B__%ID%.old`
-  // 3. Copy the newest saves to `SONIC2B__%ID%`
-}
 
 int On_WriteSaveFile(char *path, void *a2, size_t count);
 UsercallFunc(
@@ -31,11 +18,11 @@ UsercallFunc(
 int On_WriteSaveFile(char *path, void *a2, size_t count)
 {
   auto result = WriteSaveFile_t.Original(path, a2, count);
-  AfterSave(); // My function
+  PushSave(config, path); // My function
   return result;
 }
 
-void MakeExperimentalHooks()
+void ApplyHooks()
 {
   WriteSaveFile_t.Hook(On_WriteSaveFile);
 }
@@ -47,7 +34,7 @@ extern "C"
   __declspec(dllexport) void __cdecl Init(const char *mod_dir, const HelperFunctions &helperFunctions)
   {
 
-    MakeExperimentalHooks();
+    ApplyHooks();
 
     auto result = configure(mod_dir, helperFunctions);
     if (!result.has_value())
@@ -62,6 +49,7 @@ extern "C"
               << "Please reconfigure your Automatic Backups mod. See README.md for further detail.";
       Debug::DisplayMessage(message.str().c_str());
     }
+    config = result.value();
 
     BackupSaves();
   }
